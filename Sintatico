@@ -1,0 +1,52 @@
+package sintatico;
+
+public class Calculadora extends bccBaseVisitor<Double>{
+    @Override
+    public Double visitPrograma(bccParser.ProgramaContext ctx){
+        double valor = visiTermo(ctx.termo1);
+        for(int i =0; i<ctx.outrosTermos.size();i++){
+            bccParser.Op1Context op1 = ctx.op1(i);
+            bccParser.TermoContext ot = ctx.outrosTermos.get(i);
+
+            String strOp1.getText();
+
+            if(strOp1.equals("+")){
+                valor +=visiTermo(ot);
+            }else{
+                valor -= visiTermo(ot);
+            }
+            
+        }
+        return valor;
+
+    
+    }
+    @Override
+    public Double visitTermo(bccParser.TermoContext ctx){
+        double valor = visitFator(ctx.fator1);
+        for(int i=0; i<ctx.outrosFatores.size();i++){
+            //pegar o operador1 que esta na lista da posicao1
+            //estando no no pai consigo pegar qualquer um 
+            bccParser.Op2Context op2 = ctx.op2(i);
+            bccParser.FatorContext of = ctx.outrosFatores.get(i);
+            //string para pegar o sinal
+            String strOp2 = op2.getText();
+            if (strOp2.equals("*")){
+                valor *=visitFator(of);
+            }else{
+                valor /=visitFator(of);
+            }
+        }
+        return valor;
+
+    }
+    @Override
+    public Double visitFator(bccParser.FatorContext ctx){
+        if(ctx.NUM()!=null){
+        return Double.parseDouble(ctx.NUM().getText());
+    }else{
+        return visit(ctx.expressao());
+    }
+
+ }
+}
