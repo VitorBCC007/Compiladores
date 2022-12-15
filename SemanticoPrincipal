@@ -1,0 +1,37 @@
+package semantico;
+
+import java.io.IOException;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+public class Principal {
+    public static void main(String[] args) throws IOException{
+        String caminho= "";
+        JFileChooser fc = new JFileChooser();
+        int retorno = fc.showOpenDiaLog(null);
+        if (retorno == JFileChooser.APPROVE_OPTION){
+            caminho =  fc.getSelectedFile().getAbsolutePath();
+            System.out.println(caminho);
+        }
+        //fluxo de caracteres > equivalentes ao leitor de arquivo text
+        CharStream cs = CharStream.fromFileName(caminho);
+        bccLexer bl = new bccLexer(cs);
+        //Deputador do Lexico
+
+        token t = null;
+        while ((t = bl.nextToken()).getType() != Token.EOF){
+            System.out.println("<" + bccLexer.VOCABULARY.getDisplayName (t.getType()) + t.getText() + ">");
+        };
+        //buffer de tokens
+        CommonTokenStream tokens = new CommonTokenStream(bl);
+        //inicializar o parser fluxo de tokens que aponta para o lexe
+        bccParser parser = new bccParser(tokens);
+        //analisador descedente começa pelo simbolo e val percorrente
+        bccParser.ProgramaContext arvore = parser.programa();
+        Calculadora c = new Calculadora();
+        double val = c.visitPrograma(arvore);
+        JOptionPane.showMessageDialog(null, "Resposta "+ val);
+    }
+    
+}
